@@ -2,6 +2,7 @@
 
 Game::Game(HWND hWnd){
 
+	//SWAPCHAIN
 	DXGI_SWAP_CHAIN_DESC scd;
 	ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
 	scd.BufferCount = 1;                                    
@@ -10,19 +11,11 @@ Game::Game(HWND hWnd){
 	scd.OutputWindow = hWnd;                                
 	scd.SampleDesc.Count = 1;                               
 	scd.Windowed = TRUE;                                    
-
 	D3D11CreateDeviceAndSwapChain(0,D3D_DRIVER_TYPE_HARDWARE,0,0,0,0,D3D11_SDK_VERSION,&scd,&swapchain,&device,NULL,&context);
 
 
-	ID3D11Texture2D *pBackBuffer;
-	swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
 
-
-	device->CreateRenderTargetView(pBackBuffer, NULL, &backbuffer);
-	pBackBuffer->Release();
-	context->OMSetRenderTargets(1, &backbuffer, NULL);
-
-
+	//VIEWPORT
 	D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 	viewport.TopLeftX = 0;
@@ -30,6 +23,34 @@ Game::Game(HWND hWnd){
 	viewport.Width = 720;
 	viewport.Height = 480;
 	context->RSSetViewports(1, &viewport);
+
+	//DEPTH BUFFER
+	D3D11_TEXTURE2D_DESC texd;
+	ZeroMemory(&texd, sizeof(texd));
+	texd.Width = 720;
+	texd.Height = 480;
+	texd.ArraySize = 1;
+	texd.MipLevels = 1;
+	texd.SampleDesc.Count = 4;
+	texd.Format = DXGI_FORMAT_D32_FLOAT;
+	texd.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	device->CreateTexture2D(&texd, NULL, &pDepthBuffer);
+
+	//DEPTH STENCIL
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
+	ZeroMemory(&dsvd, sizeof(dsvd));
+	dsvd.Format = DXGI_FORMAT_D32_FLOAT;
+	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+	device->CreateDepthStencilView(pDepthBuffer, &dsvd, &zbuffer);
+
+	//BACKBUFFER
+	ID3D11Texture2D *pBackBuffer;
+	swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+	device->CreateRenderTargetView(pBackBuffer, NULL, &backbuffer);
+	pBackBuffer->Release();
+	context->OMSetRenderTargets(1, &backbuffer, zbuffer);
+
+
 
 
 }

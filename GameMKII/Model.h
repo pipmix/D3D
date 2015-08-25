@@ -4,7 +4,7 @@
 #include <fstream>
 #include <istream>
 #include <DirectXMath.h>
-#pragma comment (lib, "d3d11_1.lib")
+#pragma comment (lib, "d3d11.lib")
 using namespace DirectX;
 using namespace std;
 
@@ -12,10 +12,12 @@ using namespace std;
 class Model
 {
 public:
-	Model();
+	Model(string fileName, ID3D11Device* d);
 	~Model();
+private:
+	void Draw();
 
-
+	
 
 
 	uint32_t                                                indexCount;
@@ -30,5 +32,24 @@ public:
 	//std::shared_ptr<IEffect>                                effect;
 	vector<D3D11_INPUT_ELEMENT_DESC>  vbDecl;
 	bool                                                    isAlpha;
+	ID3D11Device * device;
+
+
+
+	struct VERTEX{
+		XMFLOAT3 pos;      
+		XMFLOAT3 normal;    
+		XMFLOAT2 uv;    
+	};
+
+	//VERTEX vertices[];
+
+	VERTEX vertices[] =
+	{
+		{ XMFLOAT3( -3.0f, -3.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f),  XMFLOAT2(0.0f, 0.0f) },
+		{ XMFLOAT3(3.0f, -3.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f),  XMFLOAT2(1.0f, 0.0f) },
+		{ XMFLOAT3(-3.0f, 3.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f),  XMFLOAT2(0.0f, 1.0f) },
+		{ XMFLOAT3(3.0f, 3.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f),  XMFLOAT2(1.0f, 1.0f) },
+	}
 };
 

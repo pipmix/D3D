@@ -1,7 +1,7 @@
 #pragma once
 #include <d3d11_1.h>
 #include <DirectXMath.h>
-#pragma comment (lib, "d3d11_1.lib")
+#pragma comment (lib, "d3d11.lib")
 using namespace DirectX;
 
 
@@ -19,6 +19,9 @@ private:
 	ID3D11Device * device;       
 	ID3D11DeviceContext * context;
 	ID3D11RenderTargetView *backbuffer;   
+	ID3D11DepthStencilView *zbuffer;       
+	ID3D11Texture2D *pDepthBuffer;
+
 
 };
 
