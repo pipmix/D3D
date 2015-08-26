@@ -1,18 +1,13 @@
 #include "loadOBJ.h"
 
-
-
-
-
-loadOBJ::loadOBJ(wstring filename)
-{
+loadOBJ::loadOBJ(wstring filename){
+	float x, y, z;
 
 	wifstream fileIn(filename.c_str());
 	if (fileIn) {
 
 		while (fileIn) {
 			curChar = fileIn.get();
-
 
 			switch (curChar) {
 				case '#':
@@ -22,20 +17,17 @@ loadOBJ::loadOBJ(wstring filename)
 				case 'v':
 					curChar = fileIn.get();
 					if (curChar == ' ') {
-						float x, y, z;
 						fileIn >> x >> y >> z;
 						if (rh)	pos.push_back(XMFLOAT3(x, y, z * -1.0f));	
 						else pos.push_back(XMFLOAT3(x, y, z));
 					}
 					if (curChar == 't') {
-						float u, v;
-						fileIn >> u >> v;
-						if (rh)	uv.push_back(XMFLOAT2(u, 1.0f - v));
-						else uv.push_back(XMFLOAT2(u,v));
+						fileIn >> x >> y;
+						if (rh)	uv.push_back(XMFLOAT2(x, 1.0f - y));
+						else uv.push_back(XMFLOAT2(x,y));
 						hasUv = true;
 					}
 					if (curChar == 'n') {
-						float x, y, z;
 						fileIn >> x >> y >> z;
 						if (rh)normal.push_back(XMFLOAT3(x,y,z * -1.0f));
 						else normal.push_back(XMFLOAT3(x, y, z));
@@ -49,19 +41,23 @@ loadOBJ::loadOBJ(wstring filename)
 						groupCount++;
 					}
 				break;
-
-
+				case 'm':
+					for (int i = 0; i < 7; i++)curChar = fileIn.get();
+					if (curChar == ' ') fileIn >> materialsLibrary;
+				break;
+				case 'u':
+					for (int i = 0; i < 7; i++)curChar = fileIn.get();
+					if (curChar == ' ') {
+						materialsTemp = L"";
+						fileIn >> materialsTemp;
+						materials.push_back(materialsTemp);
+					}
+				break;
+				default:
+				break;
 			}
-
-
-
 		}
-
-
-
-
 	}
-
 }
 
 loadOBJ::~loadOBJ()
@@ -69,20 +65,6 @@ loadOBJ::~loadOBJ()
 }
 
 void loadOBJ::addVertex(float x, float y, float z){
-
-
-
-		vertices.push_back(
-			XMFLOAT3(
-			(vertices[x], vertices[x + 1], vertices[x + 2]),
-			vertices[y], vertices[y + 1], vertices[y + 2],
-			vertices[z], vertices[z + 1], vertices[z + 2]
-				)
-			);
-
-
-
-
 
 
 

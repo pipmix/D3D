@@ -24,6 +24,9 @@ private:
 	vector<int> normalIndex;
 	vector<int> uvIndex;
 
+	vector<wstring> materials;
+	wstring materialsTemp;
+	wstring materialsLibrary;
 
 	void addVertex(float, float, float);
 	void addVertex(XMFLOAT3);
