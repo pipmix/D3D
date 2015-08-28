@@ -5,10 +5,18 @@
 #include <istream>
 #include <string>
 #include <DirectXMath.h>
-#include <D3Dcompiler.h>
+#include "DirectXHelper.h"
+
 #pragma comment (lib, "d3d11.lib")
 using namespace DirectX;
 using namespace std;
+
+struct ModelViewProjectionConstantBuffer
+{
+	DirectX::XMFLOAT4X4 model;
+	DirectX::XMFLOAT4X4 view;
+	DirectX::XMFLOAT4X4 projection;
+};
 
 
 class Model{
@@ -41,6 +49,9 @@ private:
 		XMFLOAT4X4 view;
 		XMFLOAT4X4 projection;
 	};
+
+	std::vector<byte>									vertexShaderByte;
+	std::vector<byte>									pixelShaderByte;
 
 	
 

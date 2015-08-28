@@ -17,16 +17,12 @@ Model::Model(string fileName, ID3D11Device * d, ID3D11DeviceContext * c){
 	device = d;
 	context = c;
 
-	ID3DBlob* vertexShaderBlob;
-	D3DReadFileToBlob(L"../VertexShader.cso", &vertexShaderBlob);
-	device->CreateVertexShader(vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize(), nullptr, &vertexShader);
 
+	//auto createVSTask = DX::ReadDataAsync(L"VertexShader.cso").then([this](vector<byte>& fileData) {vertexShaderByte = fileData;});
+	//auto createPSTask = DX::ReadDataAsync(L"PixelShader.cso").then([this](vector<byte>& fileData) {pixelShaderByte = fileData;});
 
-	ID3DBlob* pixelShaderBlob;
-	D3DReadFileToBlob(L"../PixelShader.cso", &pixelShaderBlob);
-	device->CreatePixelShader(pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize(), nullptr, &pixelShader);
-
-
+	auto loadVSTask = DX::ReadDataAsync(L"SampleVertexShader.cso");
+	auto loadPSTask = DX::ReadDataAsync(L"SamplePixelShader.cso");
 
 
 	Vertex vertices[] = {
