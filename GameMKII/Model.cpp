@@ -21,8 +21,6 @@ Model::Model(string fileName, ID3D11Device * d, ID3D11DeviceContext * c){
 	//auto createVSTask = DX::ReadDataAsync(L"VertexShader.cso").then([this](vector<byte>& fileData) {vertexShaderByte = fileData;});
 	//auto createPSTask = DX::ReadDataAsync(L"PixelShader.cso").then([this](vector<byte>& fileData) {pixelShaderByte = fileData;});
 
-	auto loadVSTask = DX::ReadDataAsync(L"SampleVertexShader.cso");
-	auto loadPSTask = DX::ReadDataAsync(L"SamplePixelShader.cso");
 
 
 	Vertex vertices[] = {
@@ -43,7 +41,7 @@ Model::Model(string fileName, ID3D11Device * d, ID3D11DeviceContext * c){
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
-	device->CreateInputLayout(ied, 3, vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize(), &inputLayout);
+	//device->CreateInputLayout(ied, ARRAYSIZE(ied), vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize(), &inputLayout);
 }
 
 
@@ -64,7 +62,9 @@ void Model::Draw(){
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-	
+	//set index buffer
+	//deviceContext->IASetPrimitiveTopology(primitiveType);
+	//deviceContext->DrawIndexed(indexCount, startIndex, vertexOffset);
 	context->Draw(3, 0);
 
 }
@@ -72,6 +72,15 @@ void Model::Draw(){
 void Model::Load() {
 
 	ifstream file("mesh.txt");
+
+	vector<XMFLOAT3> pos;
+	vector<XMFLOAT3> normal;
+	vector<XMFLOAT2> uv;
+	vector<string> listOfVerts;
+	wchar_t curChar;
+	float x, y, z;
+	string f1, f2, f3;
+
 	if (file) {
 		while (file) {
 			curChar = file.get();
@@ -96,16 +105,22 @@ void Model::Load() {
 			case 'f':
 				curChar = file.get();
 				file >> f1 >> f2 >> f3;
-
+				listOfVerts.push_back(f1);
+				listOfVerts.push_back(f2);
+				listOfVerts.push_back(f3);
+				break;
 			default:
 				break;
 			}
 		}
-
-		//for (int i = 0; i < pos.size(); i++) std::cout << pos[i].x << " " << pos[i].y << " " << pos[i].z << endl;
-		//for (int i = 0; i < uv.size(); i++) std::cout << uv[i].x << " " << uv[i].y << " " << endl;
-		//for (int i = 0; i < normal.size(); i++) std::cout << normal[i].x << " " << normal[i].y << " " << normal[i].z << endl;
-
+		//USE THE STRINGS TO MAKE THE VERTEXS
+		int a, b, c;
+		char c1, c2;
+		for (int i = 0; i < listOfVerts.size();i++) {
+			istringstream buf(listOfVerts[i]);
+			if (buf >> a >> c1 >> b >> c2 >> c && c1 == '/' && c2 == '/')faces.push_back(VERTEX(pos[a - 1], normal[c - 1], uv[b - 1]));
+		}
+		//----------------------------------
 
 	}
 

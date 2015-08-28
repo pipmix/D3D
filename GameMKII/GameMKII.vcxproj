@@ -154,7 +154,6 @@
   <ItemGroup>
     <ClInclude Include="dds.h" />
     <ClInclude Include="DDSTextureLoader.h" />
-    <ClInclude Include="DirectXHelper.h" />
     <ClInclude Include="DirectXHelpers.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Model.h" />

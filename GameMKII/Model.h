@@ -3,9 +3,10 @@
 #include <vector>
 #include <fstream>
 #include <istream>
+#include <sstream>
 #include <string>
 #include <DirectXMath.h>
-#include "DirectXHelper.h"
+
 
 #pragma comment (lib, "d3d11.lib")
 using namespace DirectX;
@@ -23,24 +24,14 @@ class Model{
 public:
 	Model(string fileName, ID3D11Device*, ID3D11DeviceContext*);
 	~Model();
-private:
-	void Draw();
-	void Load();
+
 	void Update();
+	void Draw();
+private:
 
-
-	vector<XMFLOAT3> pos;
-	vector<XMFLOAT3> normal;
-	vector<XMFLOAT2> uv;
-
-	wchar_t curChar;
-	float x, y, z;
-	string f1, f2, f3;
-
-
-
-	ID3D11Buffer* vertBuff;
-	ID3D11Buffer* indexBuff;
+	
+	void Load();
+	
 
 
 
@@ -50,10 +41,17 @@ private:
 		XMFLOAT4X4 projection;
 	};
 
-	std::vector<byte>									vertexShaderByte;
-	std::vector<byte>									pixelShaderByte;
-
-	
+	// SHADERS
+	ID3D11VertexShader*		vertexShader = nullptr;
+	ID3D11PixelShader*		pixelShader = nullptr;
+	vector<byte>			vertexShaderByte;
+	vector<byte>			pixelShaderByte;
+	// BUFFERS
+	ID3D11Buffer*			indexBuffer;
+	ID3D11Buffer*			vertexBuffer;
+	// CONTEXTS
+	ID3D11Device *			device;
+	ID3D11DeviceContext *	context;
 
 
 	uint32_t                                                indexCount;
@@ -63,25 +61,27 @@ private:
 	D3D_PRIMITIVE_TOPOLOGY                                  primitiveType;
 	DXGI_FORMAT                                             indexFormat;
 
-	ID3D11Buffer* indexBuffer;
-	ID3D11Buffer* vertexBuffer;
+
+
 	//std::shared_ptr<IEffect>                                effect;
 	vector<D3D11_INPUT_ELEMENT_DESC>  vbDecl;
 	bool                                                    isAlpha;
-	ID3D11Device * device;
-	ID3D11DeviceContext * context;
-
-	ID3D11VertexShader* vertexShader = nullptr;
-	ID3D11PixelShader* pixelShader = nullptr;
 
 	ID3D11InputLayout* inputLayout = nullptr;
 
 
-	struct VERTEX{
-		XMFLOAT3 pos;      
-		XMFLOAT3 normal;    
-		XMFLOAT2 uv;    
+	struct VERTEX {
+		XMFLOAT3 pos;
+		XMFLOAT3 normal;
+		XMFLOAT2 uv;
+		VERTEX(XMFLOAT3 p, XMFLOAT3 n, XMFLOAT2 u) {
+			pos = p;
+			normal = n;
+			uv = u;
+		}
 	};
+
+	vector<VERTEX> faces;
 
 
 };
