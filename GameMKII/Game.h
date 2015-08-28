@@ -14,6 +14,10 @@ public:
 	~Game();
 	void Update();
 	void Draw();
+
+	ID3D11Device* ReturnDevice();
+	ID3D11DeviceContext* ReturnContext();
+	
 private:
 	IDXGISwapChain * swapchain;
 	ID3D11Device * device;       

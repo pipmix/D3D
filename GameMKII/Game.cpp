@@ -68,10 +68,25 @@ void Game::Update()
 
 void Game::Draw()
 {
+
+
+
 	float fill[4] = { 0.0f, 0.0f, 0.25f, 1.0f };
 	context->ClearRenderTargetView(backbuffer,fill);
 
+	context->OMSetRenderTargets(1, &backbuffer, zbuffer );
+
 
 	swapchain->Present(0, 0);
+}
+
+ID3D11Device * Game::ReturnDevice()
+{
+	return device;
+}
+
+ID3D11DeviceContext * Game::ReturnContext()
+{
+	return context;
 }
 
