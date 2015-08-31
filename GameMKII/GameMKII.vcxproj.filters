@@ -39,6 +39,9 @@
     <ClCompile Include="DDSTextureLoader.cpp">
       <Filter>Microsoft</Filter>
     </ClCompile>
+    <ClCompile Include="SB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -69,6 +72,9 @@
       <Filter>Microsoft</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

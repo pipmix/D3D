@@ -30,10 +30,13 @@ public:
 private:
 
 	
-	void Load();
+	void LoadModel();
+	void LoadShader();
+	void CreateVertexBuffer();
+	void CreateConstantBuffer();
 	
 
-
+	ID3D11Buffer*   cb = nullptr;
 
 	struct ConstantBuffer {
 		XMFLOAT4X4 model;
@@ -87,6 +90,7 @@ private:
 	vector<VERTEX> faces;
 	VERTEX * ar = nullptr;
 
+	int numberOfVerts = 0;
 
 };
 

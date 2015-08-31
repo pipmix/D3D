@@ -1,3 +1,11 @@
+cbuffer mvpConstantBuffer : register(b0)
+{
+	matrix model;
+	matrix view;
+	matrix projection;
+};
+
+
 
 struct Input {
 	float3 position : POSITION;
@@ -23,3 +31,4 @@ Output main(Input input) {
 
 	return output;
 }
+

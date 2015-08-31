@@ -19,12 +19,14 @@ public:
 	ID3D11DeviceContext* ReturnContext();
 	
 private:
-	IDXGISwapChain * swapchain;
-	ID3D11Device * device;       
-	ID3D11DeviceContext * context;
-	ID3D11RenderTargetView *backbuffer;   
-	ID3D11DepthStencilView *zbuffer;       
-	ID3D11Texture2D *pDepthBuffer;
+	IDXGISwapChain * swapchain = nullptr;
+	ID3D11Device * device = nullptr;
+	ID3D11DeviceContext * context = nullptr;
+	ID3D11RenderTargetView *backbuffer = nullptr;
+	ID3D11DepthStencilView *zbuffer = nullptr;
+	ID3D11Texture2D *pDepthBuffer = nullptr;
+
+	ID3D11Texture2D *pBackBuffer = nullptr;
 
 
 };

@@ -26,7 +26,7 @@ Game::Game(HWND hWnd){
 	device->CreateDepthStencilView(pDepthBuffer, &dsvd, &zbuffer);
 
 	//BACKBUFFER
-	ID3D11Texture2D *pBackBuffer;
+	
 	swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
 	device->CreateRenderTargetView(pBackBuffer, NULL, &backbuffer);
 	pBackBuffer->Release();

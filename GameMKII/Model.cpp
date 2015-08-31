@@ -1,33 +1,22 @@
 #include "Model.h"
 
-struct Vertex {
-
-	XMFLOAT3 pos;
-	XMFLOAT3 normal;
-	XMFLOAT2 uv;
-
-
-};
-
-
 
 Model::Model(string fileName, ID3D11Device * d, ID3D11DeviceContext * c){
 
-	Load();
+
 	device = d;
 	context = c;
+	LoadModel();
 
-
-
+	// LOAD SHADERS
 	ifstream vsFile("VertexShader.cso", ios::binary);
 	vector<char> vsData = { istreambuf_iterator<char>(vsFile), istreambuf_iterator<char>() };
-
 	ifstream psFile("PixelShader.cso", ios::binary);
 	vector<char> psData = { istreambuf_iterator<char>(psFile), istreambuf_iterator<char>() };
-
 	device->CreateVertexShader(vsData.data(), vsData.size(), nullptr, &vertexShader);
 	device->CreatePixelShader(psData.data(), psData.size(), nullptr, &pixelShader);
 
+	// CREATE INPUT LAYOUT
 	const D3D11_INPUT_ELEMENT_DESC ied[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -36,11 +25,7 @@ Model::Model(string fileName, ID3D11Device * d, ID3D11DeviceContext * c){
 	device->CreateInputLayout(ied, ARRAYSIZE(ied), vsData.data(), vsData.size(), &inputLayout);
 	context->IASetInputLayout(inputLayout);
 
-
-
-
-
-
+	// CREATE VERTEX BUFFER
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
@@ -50,22 +35,44 @@ Model::Model(string fileName, ID3D11Device * d, ID3D11DeviceContext * c){
 	bd.MiscFlags = 0;
 	D3D11_SUBRESOURCE_DATA vertexData = { 0 };
 	ZeroMemory(&vertexData, sizeof(vertexData));
-	//vertexData.pSysMem = faces;
+	vertexData.pSysMem = ar;
 	device->CreateBuffer(&bd, &vertexData, &vertexBuffer);
 	
-
-	// Set vertex buffer
+	// SET VERTEX BUFFER
 	UINT stride = sizeof(VERTEX);
 	UINT offset = 0;
 	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-
-	//Vertex vertices[] = {
-	//	{XMFLOAT3(-1,-1,1),XMFLOAT3(1,1,1),XMFLOAT2(1,1)},
-	//	{XMFLOAT3(0,1,0),XMFLOAT3(1,1,1),XMFLOAT2(1,1)},
-	//	{XMFLOAT3(1,-1,0),XMFLOAT3(1,1,1),XMFLOAT2(1,1)}
-	//};
-
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+
+
+	// CONSTANT BUFFER
+
+	VS_CONSTANT_BUFFER VsConstData;
+	VsConstData.mWorldViewProj = { ... };
+	VsConstData.vSomeVectorThatMayBeNeededByASpecificShader = XMFLOAT4(1, 2, 3, 4);
+	VsConstData.fSomeFloatThatMayBeNeededByASpecificShader = 3.0f;
+	VsConstData.fTime = 1.0f;
+	VsConstData.fSomeFloatThatMayBeNeededByASpecificShader2 = 2.0f;
+	VsConstData.fSomeFloatThatMayBeNeededByASpecificShader3 = 4.0f;
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = sizeof(VS_CONSTANT_BUFFER);
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &VsConstData;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	device->CreateBuffer(&cbDesc, &InitData,&cb);
+	context->VSSetConstantBuffers(0, 1, &cb);
 
 
 
@@ -90,17 +97,18 @@ void Model::Draw(){
 	context->VSGetShader(&vertexShader, nullptr, 0);
 	context->PSGetShader(&pixelShader, nullptr, 0);
 
-	UINT stride = sizeof(Vertex);
+	UINT stride = sizeof(VERTEX);
 	UINT offset = 0;
 	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 	//set index buffer
 	//deviceContext->IASetPrimitiveTopology(primitiveType);
 	//deviceContext->DrawIndexed(indexCount, startIndex, vertexOffset);
-	context->Draw(3, 0);
+	context->Draw(numberOfVerts, 0);
+
 
 }
 
-void Model::Load() {
+void Model::LoadModel() {
 
 	ifstream file("mesh.txt");
 
@@ -147,23 +155,14 @@ void Model::Load() {
 		//USE THE STRINGS TO MAKE THE VERTEXS
 		int a, b, c;
 		char c1, c2;
-		int numberOfVerts = listOfVerts.size();
+		numberOfVerts = listOfVerts.size();
 
 		//VERTEX * ar = new VERTEX[numberOfVerts];
 		ar = new VERTEX[numberOfVerts];
-
-
 		for (int i = 0; i < listOfVerts.size();i++) {
 			istringstream buf(listOfVerts[i]);
 			if (buf >> a >> c1 >> b >> c2 >> c && c1 == '/' && c2 == '/')faces.push_back(VERTEX(pos[a - 1], normal[c - 1], uv[b - 1]));
 		}
-
 		for (int i = 0; i < faces.size(); i++)ar[i] = faces[i];
-		
-
-
-		//----------------------------------
-
 	}
-
 }
