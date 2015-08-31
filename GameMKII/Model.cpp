@@ -13,35 +13,66 @@ struct Vertex {
 
 Model::Model(string fileName, ID3D11Device * d, ID3D11DeviceContext * c){
 
-	//Load();
+	Load();
 	device = d;
 	context = c;
 
 
-	//auto createVSTask = DX::ReadDataAsync(L"VertexShader.cso").then([this](vector<byte>& fileData) {vertexShaderByte = fileData;});
-	//auto createPSTask = DX::ReadDataAsync(L"PixelShader.cso").then([this](vector<byte>& fileData) {pixelShaderByte = fileData;});
 
+	ifstream vsFile("VertexShader.cso", ios::binary);
+	vector<char> vsData = { istreambuf_iterator<char>(vsFile), istreambuf_iterator<char>() };
 
+	ifstream psFile("PixelShader.cso", ios::binary);
+	vector<char> psData = { istreambuf_iterator<char>(psFile), istreambuf_iterator<char>() };
 
-	Vertex vertices[] = {
-		{XMFLOAT3(-1,-1,1),XMFLOAT3(1,1,1),XMFLOAT2(1,1)},
-		{XMFLOAT3(0,1,0),XMFLOAT3(1,1,1),XMFLOAT2(1,1)},
-		{XMFLOAT3(1,-1,0),XMFLOAT3(1,1,1),XMFLOAT2(1,1)}
-	};
-	auto vertexBufferDesc = CD3D11_BUFFER_DESC(sizeof(vertices), D3D11_BIND_VERTEX_BUFFER);
-	D3D11_SUBRESOURCE_DATA vertexData = { 0 };
-	vertexData.pSysMem = vertices;
-	device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
-
-
-	
+	device->CreateVertexShader(vsData.data(), vsData.size(), nullptr, &vertexShader);
+	device->CreatePixelShader(psData.data(), psData.size(), nullptr, &pixelShader);
 
 	const D3D11_INPUT_ELEMENT_DESC ied[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
-	//device->CreateInputLayout(ied, ARRAYSIZE(ied), vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize(), &inputLayout);
+	device->CreateInputLayout(ied, ARRAYSIZE(ied), vsData.data(), vsData.size(), &inputLayout);
+	context->IASetInputLayout(inputLayout);
+
+
+
+
+
+
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(VERTEX) * faces.size();
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0;
+	bd.MiscFlags = 0;
+	D3D11_SUBRESOURCE_DATA vertexData = { 0 };
+	ZeroMemory(&vertexData, sizeof(vertexData));
+	//vertexData.pSysMem = faces;
+	device->CreateBuffer(&bd, &vertexData, &vertexBuffer);
+	
+
+	// Set vertex buffer
+	UINT stride = sizeof(VERTEX);
+	UINT offset = 0;
+	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+
+	//Vertex vertices[] = {
+	//	{XMFLOAT3(-1,-1,1),XMFLOAT3(1,1,1),XMFLOAT2(1,1)},
+	//	{XMFLOAT3(0,1,0),XMFLOAT3(1,1,1),XMFLOAT2(1,1)},
+	//	{XMFLOAT3(1,-1,0),XMFLOAT3(1,1,1),XMFLOAT2(1,1)}
+	//};
+
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+
+
+
+	
+
+
 }
 
 
@@ -116,10 +147,21 @@ void Model::Load() {
 		//USE THE STRINGS TO MAKE THE VERTEXS
 		int a, b, c;
 		char c1, c2;
+		int numberOfVerts = listOfVerts.size();
+
+		//VERTEX * ar = new VERTEX[numberOfVerts];
+		ar = new VERTEX[numberOfVerts];
+
+
 		for (int i = 0; i < listOfVerts.size();i++) {
 			istringstream buf(listOfVerts[i]);
 			if (buf >> a >> c1 >> b >> c2 >> c && c1 == '/' && c2 == '/')faces.push_back(VERTEX(pos[a - 1], normal[c - 1], uv[b - 1]));
 		}
+
+		for (int i = 0; i < faces.size(); i++)ar[i] = faces[i];
+		
+
+
 		//----------------------------------
 
 	}

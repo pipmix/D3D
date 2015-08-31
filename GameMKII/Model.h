@@ -79,9 +79,13 @@ private:
 			normal = n;
 			uv = u;
 		}
+		VERTEX() {
+
+		}
 	};
 
 	vector<VERTEX> faces;
+	VERTEX * ar = nullptr;
 
 
 };

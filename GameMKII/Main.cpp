@@ -33,12 +33,18 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
 
 	game = new Game(hWnd);
 
-	MSG msg;
-	while (GetMessage(&msg, NULL, 0, 0)){
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-		game->Update();
-		game->Draw();
+
+
+	MSG msg = { 0 };
+	while (WM_QUIT != msg.message){
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)){
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else{
+			game->Update();
+			game->Draw();
+		}
 	}
 
 	return (int)msg.wParam;
