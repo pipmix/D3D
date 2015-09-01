@@ -48,22 +48,17 @@ Model::Model(string fileName, ID3D11Device * d, ID3D11DeviceContext * c){
 
 	// CONSTANT BUFFER
 
-	VS_CONSTANT_BUFFER VsConstData;
-	VsConstData.mWorldViewProj = { ... };
-	VsConstData.vSomeVectorThatMayBeNeededByASpecificShader = XMFLOAT4(1, 2, 3, 4);
-	VsConstData.fSomeFloatThatMayBeNeededByASpecificShader = 3.0f;
-	VsConstData.fTime = 1.0f;
-	VsConstData.fSomeFloatThatMayBeNeededByASpecificShader2 = 2.0f;
-	VsConstData.fSomeFloatThatMayBeNeededByASpecificShader3 = 4.0f;
 
-	// Fill in a buffer description.
-	D3D11_BUFFER_DESC cbDesc;
-	cbDesc.ByteWidth = sizeof(VS_CONSTANT_BUFFER);
-	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
-	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cbDesc.MiscFlags = 0;
-	cbDesc.StructureByteStride = 0;
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(ConstantBuffer);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+	device->CreateBuffer(&bd, NULL, &constantBuffer);
+		
+
+
 
 	// Fill in the subresource data.
 	D3D11_SUBRESOURCE_DATA InitData;

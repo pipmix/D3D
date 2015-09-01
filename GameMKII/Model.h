@@ -36,7 +36,7 @@ private:
 	void CreateConstantBuffer();
 	
 
-	ID3D11Buffer*   cb = nullptr;
+	
 
 	struct ConstantBuffer {
 		XMFLOAT4X4 model;
@@ -50,8 +50,9 @@ private:
 	vector<byte>			vertexShaderByte;
 	vector<byte>			pixelShaderByte;
 	// BUFFERS
-	ID3D11Buffer*			indexBuffer;
-	ID3D11Buffer*			vertexBuffer;
+	ID3D11Buffer*			indexBuffer = nullptr;
+	ID3D11Buffer*			vertexBuffer = nullptr;
+	ID3D11Buffer*			constantBuffer = nullptr;
 	// CONTEXTS
 	ID3D11Device *			device;
 	ID3D11DeviceContext *	context;

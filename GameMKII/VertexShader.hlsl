@@ -32,3 +32,6 @@ Output main(Input input) {
 	return output;
 }
 
+//output.Pos = mul(Pos, World);
+//output.Pos = mul(output.Pos, View);
+//output.Pos = mul(output.Pos, Projection);
